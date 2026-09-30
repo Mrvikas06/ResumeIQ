@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>404 Page Not Found — ResumeIQ</title>
+  <link rel="icon" type="image/png" href="logo-square.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f3f2ee; /* Matches the warm off-white in the screenshot */
+      --ink: #111111;
+    }
+    
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--bg);
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+    }
+    
+    .error-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .four-container {
+      display: flex;
+      gap: 12vw; /* Space between the two 4s */
+      font-size: 28vw;
+      font-weight: 500;
+      line-height: 0.75;
+      color: var(--ink);
+      letter-spacing: -0.05em;
+    }
+
+    .zero {
+      font-size: 32vw;
+      font-weight: 500;
+      line-height: 0.75;
+      color: var(--ink);
+      letter-spacing: -0.05em;
+      margin-top: -4vw; /* Pulls the 0 up close to the 4s */
+    }
+
+    .go-back {
+      margin-top: 4vh;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink);
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .go-back:hover {
+      opacity: 0.5;
+    }
+
+    /* Mobile Adjustments */
+    @media (max-width: 768px) {
+      .four-container {
+        font-size: 45vw;
+        gap: 16vw;
+      }
+      .zero {
+        font-size: 50vw;
+        margin-top: -6vw;
+      }
+      .go-back {
+        font-size: 14px;
+        margin-top: 6vh;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="error-container">
+    <div class="four-container">
+      <span>4</span>
+      <span>4</span>
+    </div>
+    <div class="zero">0</div>
+    <a href="index.html" class="go-back">Go back</a>
+  </div>
+
+</body>
+</html>
