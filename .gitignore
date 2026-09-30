@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+venv/
+env/
+.env
+
+# Data
+data/*.json
+!data/.keep
+models/*.pkl
+!models/.keep
+
+# IDEs
+.vscode/
+.idea/
+*.swp
