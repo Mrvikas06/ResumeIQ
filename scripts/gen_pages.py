@@ -1,0 +1,242 @@
+"""Generate sidebar pages for the frontend."""
+import os
+
+SIDEBAR = """<nav class="sidebar">
+  <div class="sidebar-label">Workspace</div>
+  <a href="index.html" class="sidebar-item{a_resume}">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    Resume Analyzer
+  </a>
+  <a href="job-matcher.html" class="sidebar-item{a_job}">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    Job Matcher
+  </a>
+  <a href="history.html" class="sidebar-item{a_history}">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    History
+  </a>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-label">Models</div>
+  <a href="classifier.html" class="sidebar-item{a_classifier}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>Classifier<span class="sidebar-tag">v1.0</span></a>
+  <a href="skill-extractor.html" class="sidebar-item{a_skill}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Skill Extractor<span class="sidebar-tag">v1.0</span></a>
+  <a href="semantic-match.html" class="sidebar-item{a_semantic}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Semantic Match<span class="sidebar-tag">v1.0</span></a>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-label">Evaluation</div>
+  <a href="metrics.html" class="sidebar-item{a_metrics}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Metrics</a>
+  <a href="confusion-matrix.html" class="sidebar-item{a_confmat}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Confusion Matrix</a>
+
+  <div style="margin-top: auto;"></div>
+  <a href="#" class="sidebar-item" id="profileBtn" style="margin-top: 8px;">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    Vikas
+  </a>
+</nav>"""
+
+pages = {
+    "history": {
+        "title": "History",
+        "key": "a_history",
+        "icon": '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+        "desc": "View your past resume analyses, compare scores over time, and track improvements. Analysis history will be stored locally.",
+    },
+    "classifier": {
+        "title": "Resume Classifier",
+        "key": "a_classifier",
+        "icon": '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>',
+        "desc": "TF-IDF (bigrams, 10k features) + Logistic Regression classifier. Trained on 336 synthetic resumes across 6 categories: AI/ML, Software Development, Data Science, Cloud/DevOps, Cybersecurity, Data Engineering.",
+        "extra": """
+    <div class="card" style="margin-top:24px;max-width:600px">
+      <div class="card-title">Model Specs</div>
+      <div class="model-row"><div class="mr-name">Architecture</div><div class="mr-type">sklearn Pipeline</div><div class="mr-val">TF-IDF + LR</div></div>
+      <div class="model-row"><div class="mr-name">Features</div><div class="mr-type">Bigram TF-IDF vectors</div><div class="mr-val">10,000</div></div>
+      <div class="model-row"><div class="mr-name">Classes</div><div class="mr-type">Resume categories</div><div class="mr-val">6</div></div>
+      <div class="model-row"><div class="mr-name">Training Size</div><div class="mr-type">Synthetic resumes</div><div class="mr-val">336</div></div>
+      <div class="model-row"><div class="mr-name">Accuracy</div><div class="mr-type">Validation + Test</div><div class="mr-val">100%</div></div>
+      <div class="model-row"><div class="mr-name">Model File</div><div class="mr-type">classifier.pkl</div><div class="mr-val">~105 KB</div></div>
+    </div>"""
+    },
+    "skill-extractor": {
+        "title": "Skill Extractor",
+        "key": "a_skill",
+        "icon": '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>',
+        "desc": "Rule-based regex keyword matching against a curated vocabulary of 64 technical skills. Detects exact matches using word-boundary regex patterns.",
+        "extra": """
+    <div class="card" style="margin-top:24px;max-width:600px">
+      <div class="card-title">Extractor Specs</div>
+      <div class="model-row"><div class="mr-name">Method</div><div class="mr-type">Regex word-boundary match</div><div class="mr-val">Rule-based</div></div>
+      <div class="model-row"><div class="mr-name">Vocabulary</div><div class="mr-type">Curated skill keywords</div><div class="mr-val">64 skills</div></div>
+      <div class="model-row"><div class="mr-name">Categories</div><div class="mr-type">AI/ML, DevOps, Data, Security, SWE</div><div class="mr-val">6</div></div>
+      <div class="model-row"><div class="mr-name">Limitations</div><div class="mr-type" style="color:var(--red)">No synonyms, no fuzzy matching</div><div class="mr-val">MVP</div></div>
+    </div>"""
+    },
+    "semantic-match": {
+        "title": "Semantic Matcher",
+        "key": "a_semantic",
+        "icon": '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>',
+        "desc": "TF-IDF cosine similarity between resume and job description. Combined with skill overlap using the formula: 0.6 × semantic + 0.4 × skill_overlap = ATS Score.",
+        "extra": """
+    <div class="card" style="margin-top:24px;max-width:600px">
+      <div class="card-title">Matcher Specs</div>
+      <div class="model-row"><div class="mr-name">Method</div><div class="mr-type">TF-IDF cosine similarity</div><div class="mr-val">Statistical</div></div>
+      <div class="model-row"><div class="mr-name">Features</div><div class="mr-type">Bigram TF-IDF vectors</div><div class="mr-val">Dynamic</div></div>
+      <div class="model-row"><div class="mr-name">Semantic Weight</div><div class="mr-type">In ATS formula</div><div class="mr-val">60%</div></div>
+      <div class="model-row"><div class="mr-name">Skill Weight</div><div class="mr-type">In ATS formula</div><div class="mr-val">40%</div></div>
+      <div class="model-row"><div class="mr-name">Score Range</div><div class="mr-type">Normalized</div><div class="mr-val">0–100%</div></div>
+    </div>"""
+    },
+    "metrics": {
+        "title": "Evaluation Metrics",
+        "key": "a_metrics",
+        "icon": '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>',
+        "desc": "View precision, recall, F1-score, and accuracy metrics for the resume classifier across all 6 categories. Currently trained on synthetic data with 100% accuracy.",
+        "extra": """
+    <div class="card" style="margin-top:24px;max-width:700px">
+      <div class="card-title">Classification Report (Test Set)</div>
+      <table style="width:100%;font-size:14px;border-collapse:collapse">
+        <thead><tr style="text-align:left;border-bottom:2px solid var(--hairline)">
+          <th style="padding:10px 8px;font-weight:700;color:var(--ink)">Category</th>
+          <th style="padding:10px 8px;font-weight:700;color:var(--ink)">Precision</th>
+          <th style="padding:10px 8px;font-weight:700;color:var(--ink)">Recall</th>
+          <th style="padding:10px 8px;font-weight:700;color:var(--ink)">F1</th>
+          <th style="padding:10px 8px;font-weight:700;color:var(--ink)">Support</th>
+        </tr></thead>
+        <tbody>
+          <tr style="border-bottom:1px solid var(--hairline)"><td style="padding:8px;color:var(--primary);font-weight:600">AI/ML</td><td style="padding:8px">1.00</td><td style="padding:8px">1.00</td><td style="padding:8px;font-weight:700">1.00</td><td style="padding:8px;color:var(--mute)">13</td></tr>
+          <tr style="border-bottom:1px solid var(--hairline)"><td style="padding:8px;font-weight:600">Cloud/DevOps</td><td style="padding:8px">1.00</td><td style="padding:8px">1.00</td><td style="padding:8px;font-weight:700">1.00</td><td style="padding:8px;color:var(--mute)">11</td></tr>
+          <tr style="border-bottom:1px solid var(--hairline)"><td style="padding:8px;font-weight:600">Cybersecurity</td><td style="padding:8px">1.00</td><td style="padding:8px">1.00</td><td style="padding:8px;font-weight:700">1.00</td><td style="padding:8px;color:var(--mute)">12</td></tr>
+          <tr style="border-bottom:1px solid var(--hairline)"><td style="padding:8px;font-weight:600">Data Engineering</td><td style="padding:8px">1.00</td><td style="padding:8px">1.00</td><td style="padding:8px;font-weight:700">1.00</td><td style="padding:8px;color:var(--mute)">9</td></tr>
+          <tr style="border-bottom:1px solid var(--hairline)"><td style="padding:8px;font-weight:600">Data Science</td><td style="padding:8px">1.00</td><td style="padding:8px">1.00</td><td style="padding:8px;font-weight:700">1.00</td><td style="padding:8px;color:var(--mute)">14</td></tr>
+          <tr><td style="padding:8px;font-weight:600">Software Dev</td><td style="padding:8px">1.00</td><td style="padding:8px">1.00</td><td style="padding:8px;font-weight:700">1.00</td><td style="padding:8px;color:var(--mute)">13</td></tr>
+        </tbody>
+        <tfoot><tr style="border-top:2px solid var(--hairline)"><td style="padding:10px 8px;font-weight:700;color:var(--ink)">Overall</td><td style="padding:10px 8px;font-weight:700">1.00</td><td style="padding:10px 8px;font-weight:700">1.00</td><td style="padding:10px 8px;font-weight:700;color:var(--primary)">1.00</td><td style="padding:10px 8px;font-weight:700;color:var(--mute)">72</td></tr></tfoot>
+      </table>
+    </div>"""
+    },
+    "confusion-matrix": {
+        "title": "Confusion Matrix",
+        "key": "a_confmat",
+        "icon": '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>',
+        "desc": "Visual confusion matrix for the resume classifier. With 100% accuracy on synthetic test data, the matrix is a perfect diagonal — every prediction matches its true label.",
+        "extra": """
+    <div class="card" style="margin-top:24px;max-width:700px">
+      <div class="card-title">Confusion Matrix (Test Set)</div>
+      <table style="width:100%;font-size:13px;border-collapse:collapse;text-align:center">
+        <thead><tr style="border-bottom:2px solid var(--hairline)">
+          <th style="padding:8px;font-weight:700;color:var(--mute);text-align:left">Actual \\ Predicted</th>
+          <th style="padding:8px;font-weight:600;color:var(--ink)">AI/ML</th>
+          <th style="padding:8px;font-weight:600;color:var(--ink)">Cloud</th>
+          <th style="padding:8px;font-weight:600;color:var(--ink)">Cyber</th>
+          <th style="padding:8px;font-weight:600;color:var(--ink)">DataEng</th>
+          <th style="padding:8px;font-weight:600;color:var(--ink)">DataSci</th>
+          <th style="padding:8px;font-weight:600;color:var(--ink)">SWE</th>
+        </tr></thead>
+        <tbody>
+          <tr style="border-bottom:1px solid var(--hairline)"><td style="padding:8px;text-align:left;font-weight:600">AI/ML</td><td style="padding:8px;background:var(--green-bg);color:var(--green);font-weight:700;border-radius:8px">13</td><td style="padding:8px;color:var(--ash)">0</td><td style="padding:8px;color:var(--ash)">0</td><td style="padding:8px;color:var(--ash)">0</td><td style="padding:8px;color:var(--ash)">0</td><td style="padding:8px;color:var(--ash)">0</td></tr>
+          <tr style="border-bottom:1px solid var(--hairline)"><td style="padding:8px;text-align:left;font-weight:600">Cloud/DevOps</td><td style="padding:8px;color:var(--ash)">0</td><td style="padding:8px;background:var(--green-bg);color:var(--green);font-weight:700;border-radius:8px">11</td><td style="padding:8px;color:var(--ash)">0</td><td style="padding:8px;color:var(--ash)">0</td><td style="padding:8px;color:var(--ash)">0</td><td style="padding:8px;color:var(--ash)">0</td></tr>
+          <tr style="border-bottom:1px solid var(--hairline)"><td style="padding:8px;text-align:left;font-weight:600">Cybersecurity</td><td style="padding:8px;color:var(--ash)">0</td><td style="padding:8px;color:var(--ash)">0</td><td style="padding:8px;background:var(--green-bg);color:var(--green);font-weight:700;border-radius:8px">12</td><td style="padding:8px;color:var(--ash)">0</td><td style="padding:8px;color:var(--ash)">0</td><td style="padding:8px;color:var(--ash)">0</td></tr>
+          <tr style="border-bottom:1px solid var(--hairline)"><td style="padding:8px;text-align:left;font-weight:600">Data Engineering</td><td style="padding:8px;color:var(--ash)">0</td><td style="padding:8px;color:var(--ash)">0</td><td style="padding:8px;color:var(--ash)">0</td><td style="padding:8px;background:var(--green-bg);color:var(--green);font-weight:700;border-radius:8px">9</td><td style="padding:8px;color:var(--ash)">0</td><td style="padding:8px;color:var(--ash)">0</td></tr>
+          <tr style="border-bottom:1px solid var(--hairline)"><td style="padding:8px;text-align:left;font-weight:600">Data Science</td><td style="padding:8px;color:var(--ash)">0</td><td style="padding:8px;color:var(--ash)">0</td><td style="padding:8px;color:var(--ash)">0</td><td style="padding:8px;color:var(--ash)">0</td><td style="padding:8px;background:var(--green-bg);color:var(--green);font-weight:700;border-radius:8px">14</td><td style="padding:8px;color:var(--ash)">0</td></tr>
+          <tr><td style="padding:8px;text-align:left;font-weight:600">Software Dev</td><td style="padding:8px;color:var(--ash)">0</td><td style="padding:8px;color:var(--ash)">0</td><td style="padding:8px;color:var(--ash)">0</td><td style="padding:8px;color:var(--ash)">0</td><td style="padding:8px;color:var(--ash)">0</td><td style="padding:8px;background:var(--green-bg);color:var(--green);font-weight:700;border-radius:8px">13</td></tr>
+        </tbody>
+      </table>
+    </div>"""
+    },
+}
+
+TEMPLATE = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>{title} — ResumeIQ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+  <link rel="icon" type="image/png" href="logo-square.png">
+</head>
+<body>
+<div class="shell">
+
+<header class="topbar">
+  <a href="index.html" class="topbar-brand">
+    <img src="logo-wide.png" alt="ResumeIQ" style="height: 54px; object-fit: contain; margin-top: 4px;">
+  </a>
+
+  <div class="topbar-right" style="display: flex; align-items: center; gap: 16px;">
+    <!-- Usage Meter -->
+    <div class="usage-meter" title="3/10 Free Scans Used" style="display: flex; align-items: center; gap: 8px; background: var(--surface-soft); border: 1px solid var(--hairline); padding: 6px 12px; border-radius: 20px;">
+      <div class="usage-text" style="font-size: 11px; font-weight: 600; color: var(--mute);">3/10 Scans</div>
+      <div class="usage-bar-bg" style="width: 32px; height: 6px; background: var(--stone); border-radius: 3px; overflow: hidden;">
+        <div class="usage-bar-fill" style="height: 100%; width: 30%; background: var(--primary); border-radius: 3px;"></div>
+      </div>
+    </div>
+
+    <!-- Badge -->
+    <span class="badge-model">AI Analysis Engine</span>
+
+    <!-- Clock -->
+    <div class="topbar-clock" id="topbarClock" style="font-weight: 600; color: var(--mute);">--:--</div>
+
+    <div style="width: 1px; height: 20px; background: var(--hairline); margin: 0 4px;"></div>
+
+    <!-- Export -->
+    <button class="btn-secondary" style="padding: 6px 12px; gap: 6px;" onclick="window.print()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Export
+    </button>
+
+    <!-- Github -->
+    <a href="https://github.com/Mrvikas06/ResumeIQ" target="_blank" class="topbar-github" title="View Source on GitHub" style="color: var(--mute);">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+    </a>
+
+    <!-- Notifications -->
+    <div class="nav-icon-btn" style="position: relative; cursor: pointer; color: var(--mute);" onclick="window.showToast('You have 1 new job match notification!')" title="Notifications">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <div style="position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background: var(--primary); border-radius: 50%; border: 2px solid var(--canvas);"></div>
+    </div>
+  </div>
+</header>
+
+{sidebar}
+
+<main class="main">
+<div class="page">
+  <div class="page-header">
+    <h1>{title}</h1>
+    <p>{desc}</p>
+  </div>
+  {extra}
+  <div style="margin-top:32px">
+    <a href="index.html" class="btn-secondary">← Back to Analyzer</a>
+  </div>
+</div>
+</main>
+
+</div>
+<script src="profile.js"></script>
+</body>
+</html>
+"""
+
+outdir = "frontend"
+for slug, info in pages.items():
+    active_keys = {
+        "a_resume": "", "a_job": "", "a_history": "",
+        "a_classifier": "", "a_skill": "", "a_semantic": "",
+        "a_metrics": "", "a_confmat": ""
+    }
+    active_keys[info["key"]] = " active"
+    sidebar = SIDEBAR.format(**active_keys)
+
+    html = TEMPLATE.format(
+        title=info["title"],
+        desc=info["desc"],
+        sidebar=sidebar,
+        extra=info.get("extra", ""),
+    )
+    path = os.path.join(outdir, f"{slug}.html")
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(html)
+    print(f"Created {path}")
