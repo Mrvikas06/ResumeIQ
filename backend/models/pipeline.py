@@ -112,14 +112,15 @@ def load_skill_keywords() -> list[str]:
 
 def extract_skills(text: str, skill_keywords: list[str] = None) -> list[str]:
     """
-    Extract skills from text using regex keyword matching.
-    This is a rule-based approach, NOT an ML model.
+    Extract skills from text using boundary-safe regex keyword matching.
+    Handles alphanumeric boundaries properly so skills like C++, CI/CD,
+    and single-letter skills are reliably extracted without false positives.
     """
     kws = skill_keywords or load_skill_keywords()
     text_lower = text.lower()
     found = []
     for skill in kws:
-        pattern = r'\b' + re.escape(skill.lower()) + r'\b'
+        pattern = r'(?<![a-zA-Z0-9])' + re.escape(skill.lower()) + r'(?![a-zA-Z0-9])'
         if re.search(pattern, text_lower):
             found.append(skill)
     return sorted(set(found))
