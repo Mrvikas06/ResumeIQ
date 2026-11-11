@@ -174,12 +174,20 @@ async def upload_file(file: UploadFile = File(...)):
             raise HTTPException(400, "PDF support not installed. Run: pip install pypdf")
         try:
             reader = PdfReader(io.BytesIO(content))
-            pages = [page.extract_text() for page in reader.pages if page.extract_text()]
-            text = " ".join(pages)
+            if getattr(reader, "is_encrypted", False):
+                raise HTTPException(400, "Password-protected PDFs are not supported.")
+            pages = []
+            for page in reader.pages:
+                page_text = page.extract_text()
+                if page_text and page_text.strip():
+                    pages.append(page_text.strip())
+            text = "\n\n".join(pages)
+        except HTTPException:
+            raise
         except Exception as e:
             raise HTTPException(400, f"Error parsing PDF: {str(e)}")
     else:
-        text = content.decode("utf-8", errors="ignore")
+        text = content.decode("utf-8", errors="replace").replace("\r\n", "\n").replace("\r", "\n")
 
     if not text.strip():
         raise HTTPException(400, "No text could be extracted from the file.")
