@@ -1,6 +1,12 @@
 /* ─── AI Resume Intelligence — Frontend Logic ─── */
 
-const API = "";
+const API = (() => {
+  if (typeof window === "undefined" || !window.location) return "";
+  const { origin, protocol, port } = window.location;
+  if (!origin || origin === "null" || protocol === "file:") return "http://127.0.0.1:8000";
+  if (port === "8000" || port === "80" || port === "443" || port === "") return "";
+  return "http://127.0.0.1:8000";
+})();
 
 /* ═══ DEMO DATA ═══ */
 const DEMO_RESUME = `Vikas Kumar Singh — Full-Stack Developer & AI Builder
