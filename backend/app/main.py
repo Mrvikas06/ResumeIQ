@@ -110,6 +110,21 @@ async def extract_skills_endpoint(body: TextRequest):
     return {"skills": skills, "count": len(skills)}
 
 
+@app.post("/api/v1/resume/classify")
+async def classify_resume_endpoint(body: TextRequest):
+    """
+    Classify resume text into one of 6 industry categories with confidence scores.
+    """
+    if not body.text.strip():
+        raise HTTPException(400, "text cannot be empty")
+    try:
+        c = get_clf()
+        classification = classify_resume(body.text, c)
+        return classification
+    except Exception as e:
+        raise HTTPException(500, f"Classification failed: {str(e)}")
+
+
 @app.post("/api/v1/resume/upload")
 async def upload_file(file: UploadFile = File(...)):
     """
