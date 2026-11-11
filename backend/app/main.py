@@ -3,7 +3,7 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import sys, os, io
 from pathlib import Path
 
@@ -51,8 +51,8 @@ def get_clf():
 # ─── Request / Response Models ────────────────────────────────────────────────
 
 class AnalyzeRequest(BaseModel):
-    resume_text: str
-    job_description: str
+    resume_text: str = Field(..., min_length=1, max_length=100000, description="Resume text content")
+    job_description: str = Field(..., min_length=1, max_length=100000, description="Job description text content")
 
 
 # ─── Routes ───────────────────────────────────────────────────────────────────
