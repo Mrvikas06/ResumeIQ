@@ -122,7 +122,14 @@
 
   <script>
     function loadHistory() {
-      const history = JSON.parse(localStorage.getItem('resumeHistory') || '[]');
+      const urlParams = new URLSearchParams(window.location.search);
+      const query = (urlParams.get('q') || '').trim().toLowerCase();
+
+      let history = JSON.parse(localStorage.getItem('resumeHistory') || '[]');
+      if (query) {
+        history = history.filter(item => (item.role || '').toLowerCase().includes(query));
+      }
+
       const tbody = document.getElementById('historyBody');
       const emptyDiv = document.getElementById('historyEmpty');
       const table = document.getElementById('historyTable');
@@ -130,6 +137,9 @@
 
       if (history.length === 0) {
         emptyDiv.style.display = 'block';
+        emptyDiv.textContent = query
+          ? `No history found matching "${query}".`
+          : 'No analysis history found. Go to the Resume Analyzer to score your first resume!';
         table.style.display = 'none';
         clearBtn.style.display = 'none';
         return;
