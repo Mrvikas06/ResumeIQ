@@ -25,28 +25,39 @@ TEMPLATES = [
     "Familiar with {s3}, {s4}. Internship experience with {s5} and {s6}.",
 ]
 
-rows = []
-for cat, skills in CATEGORIES.items():
-    for _ in range(80):  # 80 per class = 480 total
-        s = random.sample(skills, min(6, len(skills)))
-        text = random.choice(TEMPLATES).format(
-            cat=cat, n=random.randint(1, 8),
-            s1=s[0], s2=s[1], s3=s[2], s4=s[3], s5=s[4], s6=s[5]
-        )
-        rows.append({"resume_text": text, "category": cat})
+def generate_data(output_dir: str = "data"):
+    """Generate synthetic resume dataset and skills vocabulary."""
+    rows = []
+    for cat, skills in CATEGORIES.items():
+        for _ in range(80):  # 80 per class = 480 total
+            s = random.sample(skills, min(6, len(skills)))
+            text = random.choice(TEMPLATES).format(
+                cat=cat, n=random.randint(1, 8),
+                s1=s[0], s2=s[1], s3=s[2], s4=s[3], s5=s[4], s6=s[5]
+            )
+            rows.append({"resume_text": text, "category": cat})
 
-random.shuffle(rows)
-df = pd.DataFrame(rows)
-n = len(df)
-train, val, test = df[:int(n*.7)], df[int(n*.7):int(n*.85)], df[int(n*.85):]
+    random.shuffle(rows)
+    df = pd.DataFrame(rows)
+    n = len(df)
+    train, val, test = df[:int(n*.7)], df[int(n*.7):int(n*.85)], df[int(n*.85):]
 
-import os; os.makedirs("data/classification", exist_ok=True)
-train.to_csv("data/classification/train.csv", index=False)
-val.to_csv("data/classification/validation.csv", index=False)
-test.to_csv("data/classification/test.csv", index=False)
-print(f"train={len(train)}, val={len(val)}, test={len(test)}")
+    import os
+    class_dir = os.path.join(output_dir, "classification")
+    os.makedirs(class_dir, exist_ok=True)
+    train.to_csv(os.path.join(class_dir, "train.csv"), index=False)
+    val.to_csv(os.path.join(class_dir, "validation.csv"), index=False)
+    test.to_csv(os.path.join(class_dir, "test.csv"), index=False)
+    print(f"train={len(train)}, val={len(val)}, test={len(test)}")
 
-# Also save skill keyword map for extraction
-SKILL_KEYWORDS = list({s for skills in CATEGORIES.values() for s in skills})
-json.dump(SKILL_KEYWORDS, open("data/skills.json", "w"), indent=2)
-print(f"Skills vocab: {len(SKILL_KEYWORDS)}")
+    # Also save skill keyword map for extraction
+    skill_keywords = sorted(list({s for skills in CATEGORIES.values() for s in skills}))
+    skills_file = os.path.join(output_dir, "skills.json")
+    with open(skills_file, "w", encoding="utf-8") as f:
+        json.dump(skill_keywords, f, indent=2)
+    print(f"Skills vocab: {len(skill_keywords)}")
+    return train, val, test
+
+
+if __name__ == "__main__":
+    generate_data()
