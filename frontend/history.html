@@ -93,9 +93,12 @@
   </div>
 
   <div class="card" style="margin-bottom: 24px;">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; gap: 12px; flex-wrap: wrap;">
       <div class="card-title" style="margin-bottom:0;">Past Analyses</div>
-      <button class="btn-clear" onclick="clearHistory()" id="clearHistoryBtn">Clear History</button>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <input type="text" id="historySearchInput" placeholder="Filter by role..." style="padding: 6px 14px; border: 1px solid var(--hairline); border-radius: 9999px; font-size: 13px; outline: none; background: var(--canvas);">
+        <button class="btn-clear" onclick="clearHistory()" id="clearHistoryBtn">Clear History</button>
+      </div>
     </div>
     
     <div id="historyEmpty" style="display:none; color:var(--mute); font-size:14px; text-align:center; padding: 40px 0;">
@@ -164,6 +167,20 @@
           </tr>
         `;
       }).join('');
+
+      const searchInput = document.getElementById('historySearchInput');
+      if (searchInput && !searchInput.dataset.bound) {
+        searchInput.dataset.bound = 'true';
+        if (query) searchInput.value = query;
+        searchInput.addEventListener('input', (e) => {
+          const val = e.target.value.trim().toLowerCase();
+          const rows = tbody.querySelectorAll('tr');
+          rows.forEach(r => {
+            const role = (r.children[1]?.textContent || '').toLowerCase();
+            r.style.display = (!val || role.includes(val)) ? '' : 'none';
+          });
+        });
+      }
     }
 
     function clearHistory() {
