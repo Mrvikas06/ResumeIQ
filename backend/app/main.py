@@ -13,7 +13,7 @@ sys.path.insert(0, str(PROJECT_ROOT / "backend"))
 
 from models.pipeline import (
     classify_resume, extract_skills, match_resume_to_job,
-    load_classifier, train_classifier
+    load_classifier, train_classifier, load_skill_keywords
 )
 
 # Optional PDF support
@@ -97,6 +97,15 @@ async def analyze_resume(body: AnalyzeRequest):
         }
     except Exception as e:
         raise HTTPException(500, f"Analysis failed: {str(e)}")
+
+
+@app.get("/api/v1/skills")
+def get_skills_vocab():
+    """
+    Return the curated list of recognized technical skills.
+    """
+    skills = load_skill_keywords()
+    return {"skills": skills, "count": len(skills)}
 
 
 @app.post("/api/v1/skills/extract")
