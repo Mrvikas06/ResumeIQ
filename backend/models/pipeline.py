@@ -53,13 +53,18 @@ def train_classifier():
 
 
 def load_classifier():
-    """Load the trained classifier from disk."""
-    model_path = MODEL_DIR / "classifier.pkl"
-    if not model_path.exists():
-        print(f"[WARNING] classifier.pkl not found at {model_path}. Training now...")
-        return train_classifier()
-    with open(model_path, "rb") as f:
-        return pickle.load(f)
+    """Load the trained classifier from disk with candidate path resolution."""
+    candidates = [
+        MODEL_DIR / "classifier.pkl",
+        PROJECT_ROOT / "models" / "saved" / "classifier.pkl"
+    ]
+    for model_path in candidates:
+        if model_path.exists():
+            with open(model_path, "rb") as f:
+                return pickle.load(f)
+
+    print("[WARNING] classifier.pkl not found in expected locations. Training now...")
+    return train_classifier()
 
 
 def classify_resume(text: str, clf=None) -> dict:
