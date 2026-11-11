@@ -6,14 +6,18 @@ __pycache__/
 venv/
 env/
 .env
+.pytest_cache/
+.coverage
+htmlcov/
 
-# Data
-data/*.json
-!data/.keep
+# Data & Models
+!data/skills.json
 models/*.pkl
 !models/.keep
 
-# IDEs
+# IDEs & OS
 .vscode/
 .idea/
 *.swp
+.DS_Store
+Thumbs.db
