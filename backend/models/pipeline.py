@@ -147,9 +147,13 @@ def match_resume_to_job(resume_text: str, job_text: str,
       - Weighted combination: 0.6 × semantic + 0.4 × skill_overlap
     """
     # Fresh vectorizer per call — fit_transform needs to see both docs together
-    vec = TfidfVectorizer(ngram_range=(1, 2))
-    matrix = vec.fit_transform([resume_text, job_text])
-    semantic_score = float(cosine_similarity(matrix[0], matrix[1])[0][0])
+    try:
+        vec = TfidfVectorizer(ngram_range=(1, 2))
+        matrix = vec.fit_transform([resume_text, job_text])
+        semantic_score = float(cosine_similarity(matrix[0], matrix[1])[0][0])
+    except ValueError:
+        # Handles cases where text contains only punctuation or stop words
+        semantic_score = 0.0
 
     resume_skills = extract_skills(resume_text)
     job_skills    = required_skills or extract_skills(job_text)
