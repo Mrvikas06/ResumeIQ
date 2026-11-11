@@ -55,6 +55,10 @@ class AnalyzeRequest(BaseModel):
     job_description: str = Field(..., min_length=1, max_length=100000, description="Job description text content")
 
 
+class TextRequest(BaseModel):
+    text: str = Field(..., min_length=1, max_length=100000, description="Input text")
+
+
 # ─── Routes ───────────────────────────────────────────────────────────────────
 
 @app.get("/health")
@@ -93,6 +97,17 @@ async def analyze_resume(body: AnalyzeRequest):
         }
     except Exception as e:
         raise HTTPException(500, f"Analysis failed: {str(e)}")
+
+
+@app.post("/api/v1/skills/extract")
+async def extract_skills_endpoint(body: TextRequest):
+    """
+    Extract technical skills from text using boundary-safe regex matching.
+    """
+    if not body.text.strip():
+        raise HTTPException(400, "text cannot be empty")
+    skills = extract_skills(body.text)
+    return {"skills": skills, "count": len(skills)}
 
 
 @app.post("/api/v1/resume/upload")
