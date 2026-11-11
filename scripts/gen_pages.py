@@ -222,6 +222,9 @@ TEMPLATE = """<!DOCTYPE html>
 
 outdir = "frontend"
 for slug, info in pages.items():
+    if slug == "history":
+        # Skip history to preserve interactive table and search state
+        continue
     active_keys = {
         "a_resume": "", "a_job": "", "a_history": "",
         "a_classifier": "", "a_skill": "", "a_semantic": "",
