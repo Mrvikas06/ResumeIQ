@@ -110,19 +110,29 @@ def load_skill_keywords() -> list[str]:
     return _skill_keywords_cache
 
 
+_compiled_patterns: dict[str, re.Pattern] = {}
+
+def _get_compiled_patterns(kws: list[str]) -> list[tuple[str, re.Pattern]]:
+    """Return cached compiled regex patterns for given skill keywords."""
+    patterns = []
+    for skill in kws:
+        if skill not in _compiled_patterns:
+            _compiled_patterns[skill] = re.compile(
+                r'(?<![a-zA-Z0-9])' + re.escape(skill.lower()) + r'(?![a-zA-Z0-9])'
+            )
+        patterns.append((skill, _compiled_patterns[skill]))
+    return patterns
+
+
 def extract_skills(text: str, skill_keywords: list[str] = None) -> list[str]:
     """
-    Extract skills from text using boundary-safe regex keyword matching.
-    Handles alphanumeric boundaries properly so skills like C++, CI/CD,
-    and single-letter skills are reliably extracted without false positives.
+    Extract skills from text using pre-compiled boundary-safe regex patterns.
+    High-performance cached implementation.
     """
     kws = skill_keywords or load_skill_keywords()
     text_lower = text.lower()
-    found = []
-    for skill in kws:
-        pattern = r'(?<![a-zA-Z0-9])' + re.escape(skill.lower()) + r'(?![a-zA-Z0-9])'
-        if re.search(pattern, text_lower):
-            found.append(skill)
+    patterns = _get_compiled_patterns(kws)
+    found = [skill for skill, pat in patterns if pat.search(text_lower)]
     return sorted(set(found))
 
 
