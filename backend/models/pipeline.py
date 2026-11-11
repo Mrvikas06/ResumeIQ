@@ -77,15 +77,36 @@ def classify_resume(text: str, clf=None) -> dict:
 
 # ─── 2. SKILL EXTRACTOR ──────────────────────────────────────────────────────
 
+DEFAULT_SKILLS = [
+    "A/B testing", "Airflow", "Ansible", "Apache Spark", "AWS", "Azure",
+    "Bash", "BERT", "BigQuery", "C++", "CI/CD", "Cloud", "data pipeline",
+    "data visualization", "dbt", "deep learning", "Docker", "encryption",
+    "ETL", "firewall", "GCP", "Git", "Hadoop", "Hugging Face",
+    "incident response", "Java", "Jenkins", "Jupyter", "Kafka",
+    "Kubernetes", "Linux", "LLM", "microservices", "MLflow", "monitoring",
+    "MySQL", "network security", "neural networks", "NLP", "Node.js",
+    "NumPy", "OWASP", "Pandas", "penetration testing", "PostgreSQL",
+    "Power BI", "Python", "PyTorch", "R", "React", "REST API",
+    "scikit-learn", "SIEM", "Snowflake", "SOC", "Spring Boot", "SQL",
+    "statistics", "Tableau", "TensorFlow", "Terraform", "transformers",
+    "unit testing", "vulnerability assessment"
+]
+
 _skill_keywords_cache = None
 
 def load_skill_keywords() -> list[str]:
-    """Load the skill vocabulary from data/skills.json (cached)."""
+    """Load the skill vocabulary from data/skills.json (cached) with default fallback."""
     global _skill_keywords_cache
     if _skill_keywords_cache is None:
         skills_path = DATA_DIR / "skills.json"
-        with open(skills_path) as f:
-            _skill_keywords_cache = json.load(f)
+        if skills_path.exists():
+            try:
+                with open(skills_path, "r", encoding="utf-8") as f:
+                    _skill_keywords_cache = json.load(f)
+            except Exception:
+                _skill_keywords_cache = list(DEFAULT_SKILLS)
+        else:
+            _skill_keywords_cache = list(DEFAULT_SKILLS)
     return _skill_keywords_cache
 
 
