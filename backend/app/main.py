@@ -2,7 +2,8 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, FileResponse, JSONResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from pydantic import BaseModel, Field
 import sys, os, io
 from pathlib import Path
@@ -70,6 +71,22 @@ def health():
 def read_root():
     """Redirect to the frontend."""
     return RedirectResponse(url="/static/index.html")
+
+@app.get("/index.html")
+def read_index():
+    """Redirect index.html to the static index page."""
+    return RedirectResponse(url="/static/index.html")
+
+@app.exception_handler(StarletteHTTPException)
+async def not_found_handler(request, exc):
+    """Serve branded 404 HTML page for browser requests or JSON error for API."""
+    if exc.status_code == 404:
+        accept = request.headers.get("accept", "")
+        if "text/html" in accept and frontend_dir.exists():
+            not_found_file = frontend_dir / "404.html"
+            if not_found_file.exists():
+                return FileResponse(str(not_found_file), status_code=404)
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
 
 
 @app.post("/api/v1/resume/analyze")
