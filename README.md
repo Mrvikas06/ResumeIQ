@@ -25,15 +25,24 @@ Built with a high-performance Python FastAPI backend and a clean, dependency-fre
 ```text
 .
 ├── backend/
-│   └── app/
-│       └── main.py          # FastAPI application & API endpoints
-├── data/                    # Generated synthetic training data
-├── frontend/                # Static HTML, CSS, and JS files
-├── models/                  # Saved ML model binaries (Pickle files)
+│   ├── app/
+│   │   ├── __init__.py
+│   │   └── main.py          # FastAPI application & REST API endpoints
+│   ├── models/
+│   │   ├── __init__.py
+│   │   ├── pipeline.py      # Classification, skill extraction & semantic matching
+│   │   └── saved/           # Trained model binaries (classifier.pkl)
+│   └── __init__.py
+├── data/
+│   ├── classification/      # Training, validation & test resume datasets
+│   └── skills.json          # Curated technical skill vocabulary
+├── frontend/                # Static HTML, CSS, assets, and JS files
 ├── scripts/
 │   ├── gen_data.py          # Generates synthetic data for the ML model
 │   └── gen_pages.py         # Utility script for generating HTML templates
+├── tests/                   # Automated pytest suite (unit & integration)
 ├── Dockerfile               # Production container configuration
+├── pytest.ini               # Pytest discovery and warning configuration
 └── requirements.txt         # Python dependencies
 ```
 
@@ -56,13 +65,28 @@ Built with a high-performance Python FastAPI backend and a clean, dependency-fre
    python -c "import sys; sys.path.insert(0, 'backend'); from models.pipeline import train_classifier; train_classifier()"
    ```
 
-4. **Start the development server:**
+4. **Run automated tests:**
+   ```bash
+   pytest
+   ```
+
+5. **Start the development server:**
    ```bash
    uvicorn backend.app.main:app --reload
    ```
 
-5. **Access the application:**
+6. **Access the application:**
    Open your browser and navigate to `http://127.0.0.1:8000`.
+
+## API Endpoints
+
+- `GET /health` — Service health check.
+- `GET /api/v1/models` — Metadata for active machine learning pipelines.
+- `GET /api/v1/skills` — Returns recognized technical skill vocabulary.
+- `POST /api/v1/skills/extract` — Extracts technical skills from input text.
+- `POST /api/v1/resume/classify` — Classifies resume into industry verticals with confidence scores.
+- `POST /api/v1/resume/analyze` — Runs end-to-end analysis (classification, skills, and JD match score).
+- `POST /api/v1/resume/upload` — Extracts text from uploaded PDF or TXT files.
 
 ## Production Deployment (AWS EC2)
 
